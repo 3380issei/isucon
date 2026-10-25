@@ -7,7 +7,7 @@
 3. このディレクトリで `terraform init`、`terraform plan`、`terraform apply` を実行します。
 4. `terraform output monitor_public_ip` で IP を確認します。EC2 の初回起動時に pprotein を自動インストール・起動します。完了まで数分待ちます。
 
-Security Group はチームからの SSH (22番) のみを受け付けます。pprotein の画面 (9000番) は公開せず、後で SSH ポートフォワード経由で利用します。競技サーバーへは、この EC2 から公開 IP 宛てに SSH 接続する想定です。
+Security Group はチームからの SSH (22番) のみを受け付けます。pprotein の画面 (9000番) は公開せず、SSH ポートフォワード経由で利用します。競技サーバー上の pprotein-agent へは、監視 EC2 から競技サーバーの公開 IP の TCP 19000 番へ HTTP 接続します。競技サーバー側の準備は [agent の README](../../pprotein/README.md) を参照してください。
 
 Terraform state、実際の `terraform.tfvars`、秘密鍵は Git にコミットしないでください。EC2 を停止しても EBS と Elastic IP には料金がかかる場合があります。
 

@@ -1,0 +1,17 @@
+[Unit]
+Description=pprotein agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=PORT=19000
+ExecStart=/usr/local/bin/pprotein-agent
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=strict
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
