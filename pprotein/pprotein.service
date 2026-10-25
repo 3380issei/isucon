@@ -1,0 +1,21 @@
+[Unit]
+Description=pprotein performance monitor
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=pprotein
+WorkingDirectory=/var/lib/pprotein
+Environment=PORT=9000
+ExecStart=/usr/local/bin/pprotein
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

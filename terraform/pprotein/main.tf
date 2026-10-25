@@ -65,12 +65,33 @@ resource "aws_security_group" "monitor" {
 }
 
 resource "aws_instance" "monitor" {
-  ami                         = data.aws_ssm_parameter.al2023_ami.value
-  instance_type               = var.instance_type
-  key_name                    = var.key_name
-  subnet_id                   = aws_subnet.public.id
-  vpc_security_group_ids      = [aws_security_group.monitor.id]
-  associate_public_ip_address = false
+  ami                    = data.aws_ssm_parameter.al2023_ami.value
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  subnet_id              = aws_subnet.public.id
+  vpc_security_group_ids = [aws_security_group.monitor.id]
+  # Bootstrap needs outbound access before the Elastic IP is associated.
+  associate_public_ip_address = true
+  user_data_replace_on_change = true
+  user_data = "#cloud-config\n${yamlencode({
+    write_files = [
+      {
+        path        = "/opt/isucon/scripts/install-pprotein-monitor.sh"
+        permissions = "0644"
+        encoding    = "b64"
+        content     = filebase64("${path.module}/../../scripts/install-pprotein-monitor.sh")
+      },
+      {
+        path        = "/opt/isucon/pprotein/pprotein.service"
+        permissions = "0644"
+        encoding    = "b64"
+        content     = filebase64("${path.module}/../../pprotein/pprotein.service")
+      }
+    ]
+    runcmd = [["bash", "/opt/isucon/scripts/install-pprotein-monitor.sh"]]
+  })}"
+
+  depends_on = [aws_route_table_association.public]
 
   tags = { Name = "isucon-pprotein" }
 }
